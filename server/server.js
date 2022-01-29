@@ -1,11 +1,14 @@
 const inquirer =  require("inquirer")
-
+const fs = require("fs")
 const mysql = require('mysql2');
+const fs = require("fs");
+const databaseConfig = JSON.parse(fs.readFileSync("./../database.json").toString());
 
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  database: 'test'
+  database: 'test',
+  password: databaseConfig.password
 });
 
 async function viewalldepartments(){
