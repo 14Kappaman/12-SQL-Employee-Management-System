@@ -1,25 +1,39 @@
 const inquirer =  require("inquirer")
 const fs = require("fs")
-const mysql = require('mysql2');
-const fs = require("fs");
-const databaseConfig = JSON.parse(fs.readFileSync("./../database.json").toString());
+const db = require('mysql2-promise')();
+const cTable = require("console.table");
 
-const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  database: 'test',
-  password: databaseConfig.password
+
+
+const databaseConfig = JSON.parse(fs.readFileSync("./database.json").toString());
+db.configure({
+    "host": "localhost",
+    "user": "root",
+    "password": databaseConfig.password,
+    "database": "twelveassignment"
 });
-
+showmainmenu()
 async function viewalldepartments(){
+    let response = await db.query("select * from department");
+    let rows = response[0];
+    console.table(rows);
+showmainmenu()
 
 }
 
 async function viewallemployees(){
+    let response = await db.query("select * from employee");
+    let rows = response[0];
+    console.table(rows);
+showmainmenu()
     
 }
 
 async function viewallroles(){
+    let response = await db.query("select * from role");
+    let rows = response[0];
+    console.table(rows);
+showmainmenu()
     
 }
 
@@ -33,7 +47,9 @@ async function addanrole(){
     
 }
 
-async function addandepartment(){
+async function addandepartment(){ 
+   await db.execute("insert into department (name) values ('HR');")
+
 
     
     
