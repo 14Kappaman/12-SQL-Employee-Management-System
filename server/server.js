@@ -38,19 +38,63 @@ showmainmenu()
 }
 
 async function addanemployee(){n
-    
+    let name = await inquirer.prompt({
+        type: "input",
+        name: "name",
+        message: "enter name of new department"
+    })
+   await db.execute("insert into department (name) values ('?');", [name.name])
+
+   console.log("added new department " + name.name)
+
+showmainmenu()
 }
 
 async function addanrole(){
+    let title = await inquirer.prompt({
+        type: "input",
+        name: "name",
+        message: "What is the title of the role?: "
+    })
+    let salary = await inquirer.prompt({
+        type: "input",
+        name: "salary",
+        validate: (i) =>{
+            return parseFloat(i) != Number.NaN; 
+        },
+        message: "What is the salary?: "
+    })
+    let department = await inquirer.prompt({
+        type: "input",
+        name: "name",
+        message: "What is the name of the department? :"
+    })
+    console.log(salary.salary)
+    try {
+        await db.execute("insert into role (title, salary, department_id) values ('?', ?, (select id from department where name='?'));", [title.name, parseFloat(salary.salary), department.name ])
+        console.log("added new role " + title.name)
+    } catch (error) {
+console.log (error.message)
+    }
+   
+   
 
+showmainmenu()
 
     
 }
 
 async function addandepartment(){ 
-   await db.execute("insert into department (name) values ('HR');")
+    let name = await inquirer.prompt({
+        type: "input",
+        name: "name",
+        message: "enter name of new department"
+    })
+   await db.execute("insert into department (name) values ('?');", [name.name])
 
+   console.log("added new department " + name.name)
 
+showmainmenu()
     
     
 }

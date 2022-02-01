@@ -7,7 +7,7 @@ create table role (
     id int primary key auto_increment,
     title varchar (30),
     salary decimal,
-    deparment_id int references department (id)
+    department_id int references department (id)
 );
 
 create table employee (
