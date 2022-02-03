@@ -23,7 +23,7 @@ showmainmenu()
 }
 
 async function viewallemployees(){
-    let response = await db.query("select * from employee");
+    let response = await db.query("select e.id, e.first_name, e.last_name, r.title, d.name, r.salary, (select concat(ee.first_name,' ', ee.last_name) as manager from employee ee where ee.id = e.manager_id) as manager from employee e left join role r on r.id = e.role_id left join department d on d.id = r.department_id;");
     let rows = response[0];
     console.table(rows);
 showmainmenu()
@@ -145,8 +145,27 @@ showmainmenu()
     
 }
 async function updateanemployeerole(){
+    let firstname = await inquirer.prompt({
+        type: "input",
+        name: "name",
+        message: "What is the first name of the employee?"
+    })
 
-    
+    let lastname = await inquirer.prompt({
+        type: "input",
+        name: "name",
+        message: "What is the last name of the employee?"
+    })
+
+    let role = await inquirer.prompt({
+    type: "input",
+    name: "name",
+    message: "What is the new role that the employee has?"
+})
+
+    await db.execute("update employee set role_id=(select id from role where title=?) where first_name=? and last_name=?",[role.name,firstname.name,lastname.name]);
+    console.log("update the role of employee")
+    showmainmenu()
     
 }
 
