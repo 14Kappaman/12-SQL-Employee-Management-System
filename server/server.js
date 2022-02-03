@@ -16,6 +16,7 @@ showmainmenu()
 async function viewalldepartments(){
     let response = await db.query("select * from department");
     let rows = response[0];
+    console.log (response)
     console.table(rows);
 showmainmenu()
 
@@ -37,20 +38,65 @@ showmainmenu()
     
 }
 
-async function addanemployee(){n
-    let name = await inquirer.prompt({
+async function addanemployee(){
+    let firstname = await inquirer.prompt({
         type: "input",
         name: "name",
-        message: "enter name of new department"
+        message: "What is the first name of the new employee?"
     })
-   await db.execute("insert into department (name) values ('?');", [name.name])
 
-   console.log("added new department " + name.name)
+    let lastname = await inquirer.prompt({
+        type: "input",
+        name: "name",
+        message: "What is the last name of the new employee?"
+    })
 
+    let role = await inquirer.prompt({
+        type: "input",
+        name: "name",
+        message: "What role does this employee have?"
+    })
+
+    let hasmanager = await inquirer.prompt({
+        type: "confirm",
+        name: "name",
+        message: "Does the employee have a manager?"
+    })
+
+    if (hasmanager.name){
+        let managersfirstname = await inquirer.prompt({
+            type: "input",
+            name: "name",
+            message: "What is the first name of the manager?"
+        })
+    
+        let managerslastname = await inquirer.prompt({
+            type: "input",
+            name: "name",
+            message: "What is the last name of the manager?"
+        })
+        let manager_id = (await db.query("select id from employee where first_name=? and last_name=?",[managersfirstname.name,managerslastname.name]))
+       
+       if (manager_id[0].length===1){
+        console.log(manager_id)
+        await db.execute("insert into employee (first_name, last_name, role_id, manager_id) values (?,?,(select id from role where title=?),?);", [firstname.name,lastname.name,role.name,parseInt (manager_id[0][0]["id"])]);
+        console.log("added new employee " + firstname.name)  
+       } else {
+           console.log ("error did not find manager")
+       }
+    
+           
+    } else{
+        await db.execute("insert into employee (first_name, last_name, role_id, manager_id) values (?,?,(select id from role where title=?),null);", [firstname.name,lastname.name,role.name]);
+        console.log("added new employee " + firstname.name)
+     
+    }
+
+    
 showmainmenu()
 }
 
-async function addanrole(){
+async function addarole(){
     let title = await inquirer.prompt({
         type: "input",
         name: "name",
@@ -71,7 +117,7 @@ async function addanrole(){
     })
     console.log(salary.salary)
     try {
-        await db.execute("insert into role (title, salary, department_id) values ('?', ?, (select id from department where name='?'));", [title.name, parseFloat(salary.salary), department.name ])
+        await db.execute("insert into role (title, salary, department_id) values (?, ?, (select id from department where name=?));", [title.name, parseFloat(salary.salary), department.name ])
         console.log("added new role " + title.name)
     } catch (error) {
 console.log (error.message)
@@ -84,13 +130,13 @@ showmainmenu()
     
 }
 
-async function addandepartment(){ 
+async function addadepartment(){ 
     let name = await inquirer.prompt({
         type: "input",
         name: "name",
         message: "enter name of new department"
     })
-   await db.execute("insert into department (name) values ('?');", [name.name])
+   await db.execute("insert into department (name) values (?);", [name.name])
 
    console.log("added new department " + name.name)
 
@@ -114,8 +160,8 @@ async function showmainmenu(){
         "view all employees",
         "view all roles",
         "add an employee",
-        "add an deparment",
-        "add an role",
+        "add a department",
+        "add a role",
         "update an employee role",
     ]
 })
@@ -132,11 +178,11 @@ switch (choice.choice){
     case "add an employee":
         addanemployee()
         break
-    case "add an deparment":
-        addandepartment()
+    case "add a department":
+        addadepartment()
         break
-    case "add an role":
-        addanrole()
+    case "add a role":
+        addarole()
         break
     case "update an employee role":
         updateanemployeerole()
