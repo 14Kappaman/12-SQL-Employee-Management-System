@@ -16,8 +16,7 @@ showmainmenu()
 async function viewalldepartments(){
     let response = await db.query("select * from department");
     let rows = response[0];
-    console.log (response)
-    console.table(rows);
+        console.table(rows);
 showmainmenu()
 
 }
@@ -78,8 +77,7 @@ async function addanemployee(){
         let manager_id = (await db.query("select id from employee where first_name=? and last_name=?",[managersfirstname.name,managerslastname.name]))
        
        if (manager_id[0].length===1){
-        console.log(manager_id)
-        await db.execute("insert into employee (first_name, last_name, role_id, manager_id) values (?,?,(select id from role where title=?),?);", [firstname.name,lastname.name,role.name,parseInt (manager_id[0][0]["id"])]);
+            await db.execute("insert into employee (first_name, last_name, role_id, manager_id) values (?,?,(select id from role where title=?),?);", [firstname.name,lastname.name,role.name,parseInt (manager_id[0][0]["id"])]);
         console.log("added new employee " + firstname.name)  
        } else {
            console.log ("error did not find manager")
@@ -115,7 +113,7 @@ async function addarole(){
         name: "name",
         message: "What is the name of the department? :"
     })
-    console.log(salary.salary)
+    
     try {
         await db.execute("insert into role (title, salary, department_id) values (?, ?, (select id from department where name=?));", [title.name, parseFloat(salary.salary), department.name ])
         console.log("added new role " + title.name)
